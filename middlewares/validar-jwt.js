@@ -6,7 +6,7 @@ const validarJWT = (req, res, next) => {
 
     //leer Token
     const token = req.header('x-token');
-    console.log( token );
+
     if( !token ) {
         return res.status( 401 ).json({ 
             ok: false,
@@ -31,11 +31,7 @@ const validarJWT = (req, res, next) => {
         
     }
 
-
-   
-
 }
-
 
 module.exports = {
     validarJWT

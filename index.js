@@ -20,7 +20,11 @@ dbConnection();
 
 //Rutas
 app.use( '/api/usuarios', require('./routes/usuarios'));
+app.use( '/api/hospitales', require('./routes/hospitales'));
+app.use( '/api/medicos', require('./routes/medicos'));
+app.use( '/api/todo', require('./routes/busquedas'));
 app.use( '/api/login', require('./routes/auth'));
+app.use( '/api/uploads', require('./routes/uploads'));
 
 app.listen( process.env.PORT, () => {
     console.log('Servidor corriendo en el puerto ' + process.env.PORT);
@@ -86,7 +90,7 @@ MIDDLEWARE
 Son funciones que se ejecutan antes de llegar a otras,
 Otra función es que la información venga como se espera.
 
-11. Encriptamos las contrraseñas
+11. Encriptamos las contraseñas
 npm i bcryptjs
 
 */

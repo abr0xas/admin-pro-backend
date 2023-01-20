@@ -9,12 +9,34 @@ const Usuario = require('../models/usuario');
 
 const getUsuarios = async(req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre role email google');
+    const desde = Number(req.query.desde) || 0;
+    console.log(desde);
+
+    // const usuarios = await Usuario
+    // .find({}, 'nombre role email google')
+     //paginacion, con skip saltamos n registros y limit es el límite de registros enviados
+    // .skip( desde )
+    // .limit( 5 );
+
+    // const total = await Usuario.count();
+
+    //Como tenemos dos await arriba, el segundo empeza cuando termina el primero. Para hacerlo simultaneo 
+    // hacemos un promise.all, y lo guardamos de esta manera en usuarios y total, en el orden de las llamadas.
+
+    const [ usuarios, total] = await Promise.all([
+        Usuario
+            .find({}, 'nombre role email google img')
+            //paginacion, con skip saltamos n registros y limit es el límite de registros enviados
+            .skip( desde )
+            .limit( 5 ),
+        Usuario.count()
+    ])
 
     res.json({
         ok: true,
         usuarios,
-        uid: req.uid //compartimos el uid del usuario que hizo la petición, esto lo configuramos en el middleware
+        uid: req.uid, //compartimos el uid del usuario que hizo la petición, esto lo configuramos en el middleware
+        total
     });
 }
 
