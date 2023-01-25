@@ -12,6 +12,10 @@ const app = express();
 //middleware es una función que se va a ejecutar siempre para todas las lineas que sigue hacia abajo
 app.use( cors() );
 
+//12 Google sign in, le decimos a express que muestre nuestra carpeta public
+app.use( express.static('public'));
+
+
 //Lectura y parseo del body
 app.use( express.json() );
 

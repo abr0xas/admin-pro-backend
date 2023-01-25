@@ -1,8 +1,9 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
 
-const usuario = require('../models/usuario');
+const Usuario = require('../models/usuario');
 const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
 
 const login = async(req, res = response, next) => {
 
@@ -11,7 +12,7 @@ const login = async(req, res = response, next) => {
     try {
 
         //Verificar email
-        const usuarioDB = await usuario.findOne( { email });
+        const usuarioDB = await Usuario.findOne( { email });
 
         if( !usuarioDB ) {
             return res.status(404).json({ 
@@ -48,6 +49,59 @@ const login = async(req, res = response, next) => {
     }
 }
 
+//12 goolge sign in
+const googleSignIn = async ( req, res= response ) => {
+
+    try {
+    
+        //const googleUser = await googleVerify(req.body.token);
+        //Google nos provee todos los datos: email, nombre, foto del perfil
+        const {email, name, picture} = await googleVerify(req.body.token);
+
+        const usuarioDB = await Usuario.findOne({ email });
+
+        console.log('por aquí');
+        let usuario;
+
+        if( !usuarioDB ) {
+            usuario = new Usuario({
+                nombre: name,
+                email,
+                password: '@@@',
+                img: picture,
+                google: true
+            })
+        } else {
+            usuario = usuarioDB;
+            usuario.google = true;
+        }
+
+        await usuario.save();
+
+        const token = await generarJWT( usuario.id );
+
+
+        res.json({
+            ok: true,
+            email, name, picture,
+            token
+        })
+
+        
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            ok: false,
+            msg: 'El token de Google no es correcto'
+        })
+        
+    }
+
+    
+
+}
+
 module.exports = {
-    login
+    login,
+    googleSignIn
 }
